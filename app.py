@@ -40,6 +40,13 @@ def bucket_undone():
 
     return jsonify({'msg': '버킷 실패!'})
 
+@app.route("/bucket/change", methods=["POST"])
+def bucket_change():
+    num_receive = request.form['num_give']
+    changeVal_receive = request.form['changeVal_give']
+    db.bucket.update_one({'num': int(num_receive)}, {'$set': {'bucket': changeVal_receive}})
+    return jsonify({'msg': '버킷 취소!'})
+
 @app.route("/bucket", methods=["GET"])
 def bucket_get():
     buckets = list(db.bucket.find({}, {'_id': False}))
