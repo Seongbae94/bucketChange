@@ -60,7 +60,7 @@
             width: 70%;
         }
 
-        .mybox > li {
+        .mybox > li > div:nth-of-type(1) {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -70,7 +70,11 @@
             min-height: 48px;
         }
 
-        .mybox > li > h2 {
+        .mybox > li > div:nth-of-type(2) {
+            display: none;
+        }
+
+        .mybox > li > div:nth-of-type(1) > h2 {
             max-width: 75%;
             font-size: 20px;
             font-weight: 500;
@@ -78,9 +82,10 @@
             margin-bottom: 0px;
         }
 
-        .mybox > li > h2.done {
+        .mybox > li > div > h2.done {
             text-decoration: line-through
         }
+
     </style>
     <script>
         $(document).ready(function () {
@@ -102,14 +107,24 @@
 
                         if (done) {
                             temp_html = `<li>
-                                        <h2 class="done">✅ ${bucket}</h2>
-                                        <button onclick="undone_bucket(${num})" type="button" class="btn btn-outline-danger">실패!</button>
+                                            <div>
+                                                 <h2 class="done">✅ ${bucket}</h2>
+                                                <button onclick="undone_bucket(${num})" type="button" class="btn btn-outline-danger">취소!</button>
+                                            </div>
                                         </li>`
                         } else {
                             temp_html = `<li>
-                                        <h2>✅ ${bucket}</h2>
-                                        <button onclick="done_bucket(${num})" type="button" class="btn btn-outline-primary">완료!</button>
-                                    </li>`
+                                            <div>
+                                                <h2>✅ ${bucket}</h2>
+                                                <button onclick="show_change_bucket(${num})" style = "margin-right: 10px" type="button" class="btn btn-outline-warning">수정하기!</button>
+                                                <button onclick="done_bucket(${num})" type="button" class="btn btn-outline-primary">완료!</button>
+                                            </div>
+                                            <div id="change${num}">
+                                                <input id = "${num}"/>
+                                                <button onclick="change_bucket(${num})" style = "margin-right: 10px" type="button" class="btn btn-outline-primary">수정</button>
+                                                <button onclick="hide_change_bucket(${num})" type="button" class="btn btn-outline-danger">닫기</button>
+                                            </div>
+                                        </li>`
                         }
                         $('#bucket-list').append(temp_html)
                     }
@@ -153,6 +168,28 @@
                 }
             });
         }
+
+        function change_bucket(num) {
+            let changeVal = $(`#${num}`).val()
+            $.ajax({
+                type: "POST",
+                url: "/bucket/change",
+                data: {num_give: num, changeVal_give: changeVal},
+                success: function (response) {
+                    // alert(response["msg"])
+                    window.location.reload();
+                }
+            });
+        }
+
+        function show_change_bucket(num) {
+            $(`#change${num}`).show();
+        }
+
+        function hide_change_bucket(num) {
+            $(`#change${num}`).hide();
+        }
+
     </script>
 </head>
 <body>
